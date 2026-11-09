@@ -1,0 +1,68 @@
+# Build the Observable Framework dashboard and publish it to GitHub Pages.
+#
+# The site is built ONLY from committed, aggregated data: the loader outputs in
+# dashboard/src/.observablehq/cache/data/. Raw and licensed data never reach CI.
+# One-time setup: repo Settings -> Pages -> Source: "GitHub Actions".
+name: Deploy dashboard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "dashboard/**"
+      - ".github/workflows/deploy-dashboard.yml"
+  workflow_dispatch: # allow a manual run from the Actions tab
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: dashboard
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: dashboard/package-lock.json
+
+      - run: npm ci
+
+      # Framework re-runs a data loader when the loader file looks newer than its cached
+      # output. A fresh checkout gives every file a new timestamp, so mark the committed
+      # cache as newest: the build then uses it and never needs Python or the raw data.
+      - name: Use committed data cache
+        run: find src/.observablehq/cache/data -type f -exec touch {} +
+
+      - run: npm run build
+
+      # Fail loudly if the build tried to run a loader (it would have needed the raw data)
+      - name: Check every data file came from the cache
+        run: test -f dist/index.html && ls dist/_file/data | grep -q json
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dashboard/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

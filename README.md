@@ -4,7 +4,7 @@
 
 **Key finding (placeholder):** _e.g. "Pre-1919 solid-wall flats with an EPC band of E or worse are X times more likely to have damp; the 10% highest-risk areas contain Y% of predicted cases."_
 
-[📊 Live dashboard](#) · [📄 Full write-up](reports/) · [🧪 Modelling notebook](notebooks/)
+[📊 Live dashboard](https://bhobbs-0.github.io/data-risk/) · [📄 Full write-up](reports/) · [🧪 Modelling notebook](notebooks/)
 
 ---
 
@@ -113,6 +113,9 @@ npm install
 npm run dev      # live preview at http://localhost:3000
 npm run build    # static site in dashboard/dist (deployable to GitHub Pages)
 ```
+
+### Deployment
+Pushing changes under `dashboard/` to `main` runs [.github/workflows/deploy-dashboard.yml](.github/workflows/deploy-dashboard.yml), which builds the site and publishes it to GitHub Pages. CI uses only the **committed loader cache** (`dashboard/src/.observablehq/cache/data/`, small aggregated JSON), so no raw or licensed data is needed or exposed. After changing the data, run `npm run build` locally to refresh the cache, then commit it.
 
 ## Repository structure
 
