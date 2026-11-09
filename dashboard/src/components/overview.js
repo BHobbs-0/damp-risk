@@ -1,22 +1,7 @@
 // Overview page: hex map hero, construction-age bars, watch list and deprivation.
 // All cards are driven by one indicator switch; hover / click / search select a council.
 import * as d3 from "npm:d3@7.9.2";
-
-const IND = {
-  pct_wall_uninsulated: { short: "Uninsulated walls", noun: "uninsulated walls", phrase: "have uninsulated walls",
-                          why: "Damp is 2–3× as common with uninsulated walls" },
-  pct_epc_efg: { short: "Rated E–G", noun: "rated EPC E–G", phrase: "are rated EPC E–G",
-                 why: "Damp is ~4× as common in homes rated E–G" },
-  pct_not_full_glazing: { short: "Single glazing", noun: "not fully double glazed", phrase: "aren't fully double glazed",
-                          why: "Damp is twice as common without full double glazing" },
-  pct_electric_heating: { short: "Electric heating", noun: "electric heating", phrase: "use electric heating",
-                          why: "Electric heating is often costly to run" },
-};
-const AGE = { "pre1919": "Pre-1919", "1919-1944": "1919–44", "1945-1964": "1945–64", "1965-1980": "1965–80",
-              "1981-1990": "1981–90", "post1990": "Post-1990" };
-const RAMP = ["#FBE7D7", "#F6C7A4", "#F0A06A", "#E07A35", "#B4530F"];
-const NO_DATA = "#D9DBE0";
-const f1 = d3.format(".1f"), fInt = d3.format(",");
+import {AGE, IND, NO_DATA, RAMP, f1, fInt, mountRail} from "./common.js";
 
 let state, D, HEX, byCode;
 
@@ -40,6 +25,7 @@ function render() {
 
 function renderMap() {
   const k = state.ind, wrap = document.getElementById("map"), w = wrap.clientWidth, h = wrap.clientHeight;
+  d3.select("#open-council").attr("href", `./areas?council=${state.hover || state.sel}`);
   const svg = d3.select(wrap).select("svg").attr("viewBox", `0 0 ${w} ${h}`);
   const proj = d3.geoMercator().fitExtent([[10, 10], [w - 10, h - 70]], HEX);
   const path = d3.geoPath(proj), col = colour();
@@ -176,6 +162,7 @@ function renderDep() {
 
 /** Mount the page onto the markup in index.md. `invalidation` (from Framework) tidies up on reload. */
 export function mountOverview(data, hex, invalidation) {
+  mountRail("overview");
   D = data; HEX = hex;
   state = { ind: "pct_wall_uninsulated", sel: null, hover: null };
   byCode = new Map(D.councils.map(c => [c.lad24cd, c]));

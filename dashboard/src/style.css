@@ -122,13 +122,78 @@ a.pill:hover { box-shadow: 0 0 0 2px rgba(240,123,43,.35); }
 .dep-top { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; margin-top: 12px; }
 .dep .chart { flex: 1; height: auto; margin-top: 10px; }
 
+/* ---------- Page grids (12 columns x 2 rows, like the Overview) ---------- */
+.dp-a { grid-column: 1 / 9; grid-row: 1; }   .dp-b { grid-column: 9 / 13; grid-row: 1; }
+.dp-c { grid-column: 1 / 8; grid-row: 2; }   .dp-d { grid-column: 8 / 13; grid-row: 2; }
+.dr-a { grid-column: 1 / 6; grid-row: 1 / 3; } .dr-b { grid-column: 6 / 13; grid-row: 1; }
+.dr-c { grid-column: 6 / 9; grid-row: 2; }   .dr-d { grid-column: 9 / 13; grid-row: 2; }
+.me-a { grid-column: 1 / 6; grid-row: 1 / 3; } .me-b { grid-column: 6 / 13; grid-row: 1; }
+.me-c { grid-column: 6 / 9; grid-row: 2; }   .me-d { grid-column: 9 / 13; grid-row: 2; }
+.chart.grow { flex: 1; height: auto; margin-top: 10px; }
+.gap { margin-top: 14px; }
+.gap-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: auto; }
+.gap-pair .tile .v { font-size: 28px; }
+.tip { position: absolute; display: none; pointer-events: none; z-index: 2; background: #fff; border-radius: 12px; padding: 8px 10px; font-size: 12px; line-height: 1.45; box-shadow: 0 6px 20px rgba(16,24,40,.12); max-width: 220px; }
+.tip b { font-weight: 600; }
+
+/* ---------- Shared pieces for the other pages ---------- */
+/* Map areas (MSOAs) behave like the hexes */
+.area { stroke: rgba(255,255,255,.95); stroke-width: .8; cursor: pointer; }
+.area.sel { stroke: var(--text); stroke-width: 2.2; }
+.seg.sm { padding: 3px; }
+.seg.sm button { padding: 4px 10px; font-size: 12px; }
+
+h1.long { font-size: 26px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Ranking strip: every council as a dot, the selected one highlighted */
+.rank-text { font-size: 15px; margin-top: 12px; }
+.rank-text b { font-weight: 600; }
+.strip { position: relative; flex: 1; min-height: 70px; margin: 4px 0 10px; }
+.strip > svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+
+/* KPI tiles */
+.tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: auto; }
+.me-a .steps { flex: 1; align-content: space-evenly; }
+.tiles.two { grid-template-columns: 1fr 1fr; margin-top: 14px; }
+.tiles.two .tile .v { font-size: 28px; color: var(--faint); }
+.tile { background: rgba(255,255,255,.7); border: 1px solid rgba(255,255,255,.95); border-radius: 18px; padding: 16px 16px 14px; }
+.tile.hl { background: var(--accent-soft); border-color: #F6D0B3; }
+.tile .l { font-size: 12.5px; color: var(--muted); }
+.tile .v { font-size: 36px; font-weight: 600; letter-spacing: -0.04em; line-height: 1.1; margin: 6px 0 4px; }
+.tile .s { font-size: 12px; color: var(--muted); }
+.good { color: var(--cool-text); font-weight: 600; } .bad { color: var(--accent-text); font-weight: 600; }
+
+/* Comparison rows: bar = this area, line = reference */
+.cmps { display: flex; flex-direction: column; justify-content: space-evenly; flex: 1; min-height: 0; margin-top: 8px; }
+.cmp { display: grid; grid-template-columns: minmax(96px, 1fr) 1.5fr 50px; align-items: center; gap: 10px; font-size: 12.5px; }
+.cmp .track { position: relative; height: 10px; background: rgba(27,29,33,.06); border-radius: 5px; }
+.cmp .fill { position: absolute; left: 0; top: 0; bottom: 0; background: #B9BEC6; border-radius: 5px; transition: width .4s ease; }
+.cmp.hl .fill { background: var(--accent); }
+.cmp .mark { position: absolute; top: -4px; width: 2px; height: 18px; background: var(--text); border-radius: 1px; transition: left .4s ease; }
+.cmp .val { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+.cmp.hl .val { color: var(--accent-text); }
+
+/* Text cards (Method page) */
+.prose { font-size: 13.5px; line-height: 1.6; color: var(--text); margin-top: 10px; overflow: auto; min-height: 0; }
+.prose p { margin: 0 0 10px; }
+.prose ul, .prose ol { margin: 0; padding-left: 18px; }
+.prose li { margin-bottom: 7px; }
+.prose b { font-weight: 600; }
+.steps { display: grid; gap: 10px; margin-top: 12px; }
+.step { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 12px; align-items: start; font-size: 13.5px; line-height: 1.5; }
+.step .num { width: 30px; height: 30px; border-radius: 10px; background: #fff; display: grid; place-items: center; font-weight: 600; box-shadow: 0 1px 2px rgba(16,24,40,.06); }
+.step.on .num { background: var(--accent); color: #fff; }
+.tbl { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px; }
+.tbl td { padding: 8px 4px; border-top: 1px solid var(--line); vertical-align: top; }
+.tbl td:first-child { font-weight: 600; width: 46%; }
+
 .foot { font-size: 11px; color: var(--muted); text-align: right; margin-top: -8px; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 
 @media (max-width: 1180px) {
   .app { height: auto; }
   .bento { grid-template-columns: 1fr; grid-template-rows: none; }
-  .hero, .age, .watch, .dep { grid-column: 1; grid-row: auto; }
+  .hero, .age, .watch, .dep, [class*="dp-"], [class*="dr-"], [class*="me-"] { grid-column: 1; grid-row: auto; min-height: 360px; }
   .hero { height: 640px; } .age { height: 380px; } .watch, .dep { height: 360px; }
 }
 

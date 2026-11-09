@@ -150,7 +150,8 @@ damp-risk/
 - [ ] **Week 2:** EDA, baseline & LightGBM models, calibration, SHAP
 - [ ] **Week 3:** Score EPC social homes, aggregate, deprivation analysis, validation
 - [ ] **Week 4:** Dashboard (Observable Framework), write-up, tests, polish
-  - [x] Overview page: one-screen layout, council hex map, D3 charts, Python data loaders
+  - [x] Five pages (Overview, Areas, Drivers, Deprivation, Method): one-screen layouts, council hex map, neighbourhood maps, D3 charts, Python data loaders
+  - [ ] Swap building indicators for modelled damp risk once trained; deploy to GitHub Pages
 
 ## Author
 
