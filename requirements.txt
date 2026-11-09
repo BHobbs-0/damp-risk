@@ -11,6 +11,7 @@ shap
 
 # Geospatial & visualisation
 geopandas
+mapclassify       # quantile / natural-breaks classes for choropleth maps
 matplotlib
 plotly
 

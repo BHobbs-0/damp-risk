@@ -96,7 +96,9 @@ Full links, file names and profiling notes are in [docs/data-sources.md](docs/da
 ```powershell
 python -m src.ingest.epc         # EPC zip -> data/interim/epc/*.parquet (~4 min)
 python -m src.ingest.postcodes   # postcode lookup -> data/interim/postcode_lookup.parquet
-# (to be added) src.ingest.ehs -> src.features -> src.models -> src.score
+python -m src.features.epc       # social homes + harmonised features -> data/processed/epc_social.parquet (~6 min)
+python -m src.geo.boundaries     # LSOA -> MSOA / LA boundaries -> data/processed/geo/
+# (to be added) src.ingest.ehs -> src.models -> src.score
 streamlit run app/app.py
 ```
 
@@ -128,6 +130,9 @@ damp-risk/
 ## Roadmap
 
 - [ ] **Week 1:** Data acquisition, cleaning, EHS ↔ EPC feature mapping
+  - [x] EPC: 2.86m social homes cleaned, harmonised features, unit-tested parsers
+  - [x] Geography: postcode → LSOA/MSOA (99.98% matched), MSOA & LA boundaries
+  - [ ] EHS: load, confirm damp variables, map to EPC features
 - [ ] **Week 2:** EDA, baseline & LightGBM models, calibration, SHAP
 - [ ] **Week 3:** Score EPC social homes, aggregate, deprivation analysis, validation
 - [ ] **Week 4:** Streamlit dashboard, write-up, tests, polish

@@ -71,9 +71,7 @@ def convert_file(zf: zipfile.ZipFile, name: str, out_path: Path) -> int:
     tmp_path = out_path.with_suffix(".parquet.tmp")
     rows = 0
     with zf.open(name) as raw:
-        reader = pv.open_csv(
-            raw, read_options=read_opts, parse_options=parse_opts, convert_options=convert_opts
-        )
+        reader = pv.open_csv(raw, read_options=read_opts, parse_options=parse_opts, convert_options=convert_opts)
         with pq.ParquetWriter(tmp_path, reader.schema, compression="zstd") as writer:
             for batch in reader:
                 writer.write_batch(batch)
