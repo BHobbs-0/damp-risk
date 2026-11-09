@@ -98,7 +98,10 @@ python -m src.ingest.epc         # EPC zip -> data/interim/epc/*.parquet (~4 min
 python -m src.ingest.postcodes   # postcode lookup -> data/interim/postcode_lookup.parquet
 python -m src.features.epc       # social homes + harmonised features -> data/processed/epc_social.parquet (~6 min)
 python -m src.geo.boundaries     # LSOA -> MSOA / LA boundaries -> data/processed/geo/
-# (to be added) src.ingest.ehs -> src.models -> src.score
+python -m src.ingest.ehs dictionary      # EHS: list every variable + label -> data/interim/ehs/variable_dictionary.csv
+python -m src.ingest.ehs search damp     # find variables by name / label / value label (regex)
+python -m src.ingest.ehs convert         # EHS SPSS/Stata -> Parquet + value labels JSON
+# (to be added) src.models -> src.score
 streamlit run app/app.py
 ```
 

@@ -6,7 +6,13 @@ Checked 2026-11-09. ✅ = downloaded into `data/raw/`, ⏳ = needs manual downlo
 - **Where:** UK Data Service catalogue (search "English Housing Survey Housing Stock Data"). A free account is required.
 - **Which version:** the **End User Licence (EUL)** editions (not "Special Licence Access", which needs a separate application).
 - **Format:** choose **SPSS (.sav)** or **Stata (.dta)**. Both load with `pyreadstat`.
-- **Save to:** `data/raw/ehs/<year>/`
+- **Save to:** `data/raw/ehs/<year>/` (the zip as downloaded is fine, because the loader extracts it)
+- **First steps once downloaded:**
+  1. `python -m src.ingest.ehs dictionary`: lists every variable in every file
+  2. `python -m src.ingest.ehs search "damp|mould|condens"`: confirm the target variables exist in the EUL
+  3. `python -m src.ingest.ehs search "weight|wgt"`: find the dwelling weight
+  4. `python -m src.ingest.ehs convert`: write Parquet files for the modelling notebooks
+- **Published benchmarks** for checking the data: see [benchmarks.md](benchmarks.md) (social rented 7% damp in 2024).
 
 ### ⚠️ Rules for picking years
 - Each stock dataset covers **two overlapping survey years** (e.g. "2022" = Apr 2021–Mar 2023). **When pooling, use only odd years or only even years**, otherwise homes get counted twice.
