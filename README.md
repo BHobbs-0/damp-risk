@@ -101,8 +101,9 @@ python -m src.geo.boundaries     # LSOA -> MSOA / LA boundaries -> data/processe
 python -m src.ingest.ehs dictionary      # EHS: list every variable + label -> data/interim/ehs/variable_dictionary.csv
 python -m src.ingest.ehs search damp     # find variables by name / label / value label (regex)
 python -m src.ingest.ehs convert         # EHS SPSS/Stata -> Parquet + value labels JSON
+python -m src.score.aggregate           # area summaries + simplified map shapes -> app/data/ (committed, ~12 MB)
 # (to be added) src.models -> src.score
-streamlit run app/app.py
+streamlit run app/Overview.py
 ```
 
 ## Repository structure

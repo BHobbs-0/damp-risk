@@ -53,7 +53,7 @@ Global sidebar on every page: project title, a short "What is this?" blurb, filt
 
 ### Page 2: Area Explorer
 - Select a **local authority**, then see an **MSOA-level** map for that LA only (keeps geometry small). MSOA is the default small-area view.
-- **LSOA toggle:** switch to LSOA detail. LSOAs with fewer than 10 scored homes are greyed out (16% of LSOAs, compared with under 0.5% of MSOAs).
+- ~~LSOA toggle~~ **Dropped (2026-11-09):** LSOA map shapes would add ~31 MB to the repo for an optional view, and 16% of LSOAs would be hidden anyway. LSOA data is still used on the Deprivation page.
 - Next to it: risk distribution (histogram) for the LA vs England.
 - Property mix table: age band, built form and EPC band in this LA vs the national average.
 - Areas where EPC coverage is below the threshold are **greyed out** with a note.
