@@ -4,7 +4,7 @@
 
 **Key finding (placeholder):** _e.g. "Pre-1919 solid-wall flats with an EPC band of E or worse are X times more likely to have damp; the 10% highest-risk areas contain Y% of predicted cases."_
 
-[📊 Live dashboard](https://bhobbs-0.github.io/data-risk/) · [📄 Full write-up](reports/) · [🧪 Modelling notebook](notebooks/)
+[📊 Live dashboard](https://bhobbs-0.github.io/damp-risk/) · [📄 Full write-up](reports/) · [🧪 Modelling notebook](notebooks/)
 
 ---
 
