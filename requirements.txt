@@ -1,0 +1,23 @@
+# Data handling
+pandas
+pyarrow
+duckdb
+pyreadstat        # reads EHS SPSS (.sav) / Stata (.dta) files from UK Data Service
+
+# Modelling
+scikit-learn
+lightgbm
+shap
+
+# Geospatial & visualisation
+geopandas
+matplotlib
+plotly
+
+# Dashboard
+streamlit
+
+# Dev
+ipykernel
+pytest
+ruff

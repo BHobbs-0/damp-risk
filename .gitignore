@@ -1,0 +1,25 @@
+# Data (licensed / large) - keep folder structure only
+data/**
+!data/**/
+!data/**/.gitkeep
+
+# Small aggregated outputs the deployed dashboard needs ARE committed:
+# app/data/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.ipynb_checkpoints/
+.pytest_cache/
+.ruff_cache/
+
+# Editors / OS
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+Thumbs.db
+
+# Secrets
+.env
+.streamlit/secrets.toml
