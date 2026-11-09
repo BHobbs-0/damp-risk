@@ -1,7 +1,8 @@
-"""Build the small, aggregated files the dashboard reads (app/data/).
+"""Build the small, aggregated files the dashboard reads (data/processed/dashboard/).
 
-Only area-level, non-disclosive data goes into app/data/ (it is committed and
-deployed). Areas with fewer than MIN_HOMES scored homes have their metrics
+Only area-level, non-disclosive data goes here. The dashboard's data loaders
+(dashboard/src/data/*.py) read it; their small JSON outputs are what gets
+published. Areas with fewer than MIN_HOMES scored homes have their metrics
 blanked out.
 
 Until the model exists (Week 2), areas are described by **building indicators
@@ -22,11 +23,14 @@ from pathlib import Path
 import duckdb
 import geopandas as gpd
 
+from src.geo.hexmap import build as build_hex_map
+from src.geo.orient import clockwise
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SOCIAL = PROJECT_ROOT / "data" / "processed" / "epc_social.parquet"
 GEO = PROJECT_ROOT / "data" / "processed" / "geo"
 IMD_CSV = PROJECT_ROOT / "data" / "raw" / "imd" / "File_7_IoD2025_All_Ranks_Scores_Deciles_Population_Denominators.csv"
-APP_DATA = PROJECT_ROOT / "app" / "data"
+OUT_DIR = PROJECT_ROOT / "data" / "processed" / "dashboard"
 
 MIN_HOMES = 10
 
@@ -124,6 +128,12 @@ def build_summaries(con: duckdb.DuckDBPyConnection) -> dict:
         select *, round(100.0 * n / sum(n) over (partition by lad24cd, feature), 1) as pct from feature_mix
     """)
 
+    con.sql(f"""
+        create or replace table by_age_band as
+        select age_band, count(*) as n_homes, {ind}
+        from social where age_band is not null group by age_band
+    """)
+
     england = con.sql(f"select count(*) as n_homes, {ind} from social").df().iloc[0].to_dict()
     england.update(
         {
@@ -143,7 +153,7 @@ def build_boundaries(out_dir: Path) -> None:
     for level, fname, key in [("lad", "lad_england.gpkg", "lad24cd"), ("msoa", "msoa_england.gpkg", "msoa21cd")]:
         gdf = gpd.read_file(GEO / fname)
         gdf["geometry"] = gdf.geometry.simplify(SIMPLIFY_M[level], preserve_topology=True)
-        gdf = gdf.to_crs(4326)
+        gdf = clockwise(gdf.to_crs(4326))  # d3-geo needs clockwise outer rings
         if level == "lad":
             gdf[[key, "lad24nm", "geometry"]].to_file(
                 out_dir / "la_boundaries.geojson", driver="GeoJSON", COORDINATE_PRECISION=COORD_DECIMALS
@@ -159,17 +169,18 @@ def build_boundaries(out_dir: Path) -> None:
 
 def main() -> None:
     t0 = time.time()
-    APP_DATA.mkdir(parents=True, exist_ok=True)
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
     con = duckdb.connect()
     england = build_summaries(con)
-    for t in ("la_summary", "msoa_summary", "lsoa_summary", "feature_mix"):
-        con.sql(f"copy {t} to '{(APP_DATA / f'{t}.parquet').as_posix()}' (format parquet, compression zstd)")
-    (APP_DATA / "england_summary.json").write_text(json.dumps(england, indent=1, default=str), encoding="utf-8")
-    build_boundaries(APP_DATA)
+    for t in ("la_summary", "msoa_summary", "lsoa_summary", "feature_mix", "by_age_band"):
+        con.sql(f"copy {t} to '{(OUT_DIR / f'{t}.parquet').as_posix()}' (format parquet, compression zstd)")
+    (OUT_DIR / "england_summary.json").write_text(json.dumps(england, indent=1, default=str), encoding="utf-8")
+    build_boundaries(OUT_DIR)
+    build_hex_map(OUT_DIR / "la_hex.geojson")
 
-    total = sum(p.stat().st_size for p in APP_DATA.rglob("*") if p.is_file())
+    total = sum(p.stat().st_size for p in OUT_DIR.rglob("*") if p.is_file())
     print(json.dumps(england, indent=1, default=str))
-    print(f"app/data: {total / 1e6:.1f} MB in {time.time() - t0:.0f}s")
+    print(f"data/processed/dashboard: {total / 1e6:.1f} MB in {time.time() - t0:.0f}s")
 
 
 if __name__ == "__main__":

@@ -101,9 +101,17 @@ python -m src.geo.boundaries     # LSOA -> MSOA / LA boundaries -> data/processe
 python -m src.ingest.ehs dictionary      # EHS: list every variable + label -> data/interim/ehs/variable_dictionary.csv
 python -m src.ingest.ehs search damp     # find variables by name / label / value label (regex)
 python -m src.ingest.ehs convert         # EHS SPSS/Stata -> Parquet + value labels JSON
-python -m src.score.aggregate           # area summaries + simplified map shapes -> app/data/ (committed, ~12 MB)
+python -m src.score.aggregate           # area summaries, map shapes, council hex map -> data/processed/dashboard/
 # (to be added) src.models -> src.score
-streamlit run app/Overview.py
+```
+
+### Run the dashboard (Observable Framework)
+Requires Node.js 20+. Python data loaders in `dashboard/src/data/` run automatically using `.venv`.
+```powershell
+cd dashboard
+npm install
+npm run dev      # live preview at http://localhost:3000
+npm run build    # static site in dashboard/dist (deployable to GitHub Pages)
 ```
 
 ## Repository structure
@@ -116,8 +124,10 @@ damp-risk/
 │   ├── ingest/        # EHS + EPC loaders
 │   ├── features/      # EHS ↔ EPC harmonisation
 │   ├── models/        # train, calibrate, explain
-│   └── score/         # apply to EPC, aggregate to areas
-├── app/               # Streamlit dashboard
+│   ├── score/         # apply to EPC, aggregate to areas
+│   ├── geo/           # boundaries, council hex cartogram
+│   └── dashboard/     # data for the dashboard's loaders
+├── dashboard/         # Observable Framework site (pages, D3 components, Python data loaders)
 ├── reports/           # write-up + figures
 ├── docs/              # design notes
 └── tests/
@@ -139,7 +149,8 @@ damp-risk/
   - [ ] EHS: load, confirm damp variables, map to EPC features
 - [ ] **Week 2:** EDA, baseline & LightGBM models, calibration, SHAP
 - [ ] **Week 3:** Score EPC social homes, aggregate, deprivation analysis, validation
-- [ ] **Week 4:** Streamlit dashboard, write-up, tests, polish
+- [ ] **Week 4:** Dashboard (Observable Framework), write-up, tests, polish
+  - [x] Overview page: one-screen layout, council hex map, D3 charts, Python data loaders
 
 ## Author
 

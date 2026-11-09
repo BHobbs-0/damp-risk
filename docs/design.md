@@ -1,6 +1,15 @@
 # Design & Layout
 
-This covers three outputs: the **Streamlit dashboard**, the **written report**, and the **visual style** they share.
+This covers three outputs: the **dashboard**, the **written report**, and the **visual style** they share.
+
+> ## Current design (2026-11-09): Observable Framework, soft bento
+> After trying several Streamlit styles, the dashboard was rebuilt as a custom **Observable Framework** site (`dashboard/`). Sections 2–4 below describe the earlier Streamlit plan; the **page list, audience and data rules still apply**, but layout and styling follow this box.
+>
+> - **One screen per page** (fits 1440×900 without scrolling): icon rail on the left; header with title, an **indicator switch** (pills), council search and a status pill; a **bento grid** of rounded frosted cards below.
+> - **Overview layout:** tall **hero card** with the council **hex cartogram** (hover/click a council for a floating callout with value, points vs England and rank); a wide **construction-age** bar card; a **watch list** (top 5 councils); a **deprivation** card. One indicator switch drives every card.
+> - **Look:** page `#E4E5E9`; cards white-to-translucent with 24px radius; Plus Jakarta Sans; big numbers; small pills. **Orange** `#F07B2B` marks the highest bar and **periwinkle** `#8E9BF5` the lowest; other bars are white with a grey top edge; values are labelled; a dashed line shows the England average. Text colours meet WCAG AA (`#1B1D21`, muted `#5E636B`, orange text `#B4530F`).
+> - **Build:** pages are Markdown with the HTML layout plus a JS cell; D3 components in `dashboard/src/components/`; styles in `dashboard/src/style.css`. **Python data loaders** (`dashboard/src/data/*.json.py`) read `data/processed/dashboard/` and output small JSON, so all analysis stays in Python. Static build in `dashboard/dist/` → GitHub Pages.
+> - **Rejected along the way** (for the record): default Streamlit; editorial/civic/dark mock-ups; a restyled Streamlit "hybrid"; a Streamlit dark theme. The problem was Streamlit's stacked layout and default-looking charts, not the colours.
 
 ---
 
@@ -16,7 +25,7 @@ This covers three outputs: the **Streamlit dashboard**, the **written report**, 
 
 ---
 
-## 2. Dashboard structure (Streamlit multipage)
+## 2. Dashboard structure (original Streamlit plan: superseded, see box above; page list still applies)
 
 ```
 app/
@@ -104,6 +113,16 @@ Suppress any area with fewer than ~10 scored homes (small numbers can be unrelia
 ---
 
 ## 4. Visual style
+
+> **Updated 2026-11-09: "hybrid" design adopted.** Inspired by a soft bento-style reference, adapted for a serious public-health topic:
+> - **Surfaces:** soft grey page `#E9EAED`, white cards with 20px radius and a 1px `#DCDEE2` border, no heavy shadows. Font: Plus Jakarta Sans.
+> - **Colour:** one accent, orange: `#D9661F` for graphics (3.6:1 on white), `#A9430B` for text (5.5:1). Neutral bars `#8A9099` (3.3:1). Text `#16181C`, secondary `#4B5058` (8:1). Meets WCAG AA.
+> - **Headlines state the finding** (e.g. "One in five social homes has uninsulated walls…"), followed by a short standfirst.
+> - **Maps are flat, not 3D.** The council map defaults to a **hex cartogram** (one equal hexagon per council) so large rural councils don't dominate visually, with a real-map toggle.
+> - **Charts:** neutral grey with one orange highlight that marks the point; values labelled on bars.
+> - **Navigation:** top bar (Overview · Areas · Drivers · Deprivation · Method). A status pill ("Building indicators · model coming") replaces the big preview banner.
+>
+> The notes below are the original style guide; where they conflict, the update above wins.
 
 **Colour**
 - Risk uses a **single-hue sequential** scale (light → dark), never red/green. It should be colourblind-safe, e.g. `#fff5eb → #7f2704` (Oranges) or Viridis.

@@ -13,10 +13,6 @@ shap
 geopandas
 mapclassify       # quantile / natural-breaks classes for choropleth maps
 matplotlib
-plotly
-
-# Dashboard
-streamlit
 
 # Dev
 ipykernel
