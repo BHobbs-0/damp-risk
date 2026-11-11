@@ -4,7 +4,15 @@
 
 **Key findings:** an estimated **~203,000 social homes in England (7.1%) have damp**. Risk is driven most by **building age** (pre-1919 homes have 1.75× the odds of a typical home; post-1990 homes 0.45×) and **energy rating** (E–G: 2.2×). The highest-risk councils are **Barking and Dagenham (8.9%)**, Forest of Dean and Southampton; **74% of pre-1919 social homes have uninsulated walls**.
 
-[📊 Live dashboard](https://bhobbs-0.github.io/damp-risk/) · [📄 Full write-up](reports/) · [🧪 Notebooks](notebooks/)
+[📊 Live dashboard](https://bhobbs-0.github.io/damp-risk/) · [📄 Full write-up](reports/write-up.md) · [🧪 Notebooks](notebooks/)
+
+[![Damp Risk Atlas overview: council hex map, risk by construction age, watch list and deprivation](reports/figures/dashboard_overview.png)](https://bhobbs-0.github.io/damp-risk/)
+
+<details>
+<summary>Areas page: any council's neighbourhoods, ranking and housing mix</summary>
+
+[![Areas page for Barking and Dagenham](reports/figures/dashboard_areas.png)](https://bhobbs-0.github.io/damp-risk/areas?council=E09000002)
+</details>
 
 ---
 

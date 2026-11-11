@@ -172,7 +172,7 @@ def drivers() -> dict:
         {"group": "Energy rating", "items": [["A–C", 3], ["D", 7], ["E–G", 12]]},
         {"group": "Walls", "items": [["Insulated", 3], ["Uninsulated", 8]]},
         {"group": "Loft insulation", "items": [["200mm or more", 3], ["Under 200mm", 7]]},
-        {"group": "Glazing", "items": [["Fully double glazed", 5], ["Not fully", 10]]},
+        {"group": "Glazing", "items": [["Fully double", 5], ["Not fully", 10]]},
     ]
     return {
         "by_age": _records(ages[["age_band", "n_homes", *[c for c in cols if c in ages.columns]]]),

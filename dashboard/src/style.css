@@ -210,6 +210,43 @@ h1.long { font-size: 26px; white-space: nowrap; overflow: hidden; text-overflow:
   .hero { height: 640px; } .age { height: 380px; } .watch, .dep { height: 360px; }
 }
 
+/* ---------- Phones ---------- */
+@media (max-width: 700px) {
+  .app { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto; min-height: 0; }
+  /* Icon rail becomes a top bar */
+  .rail { flex-direction: row; justify-content: flex-start; padding: 12px 16px 0; gap: 6px; }
+  .logo { margin: 0 8px 0 0; width: 36px; height: 36px; }
+  .rail a { width: 36px; height: 36px; }
+  /* One column capped at the screen width; otherwise the non-wrapping pill row stretches every card */
+  .main { padding: 10px 16px 20px; gap: 14px; grid-template-columns: minmax(0, 1fr); }
+  .main > *, header > * { min-width: 0; }
+  header { gap: 10px; }
+  .titles { min-width: 0; width: 100%; }
+  h1 { font-size: 26px; } h1.long { font-size: 22px; }
+  /* Indicator pills scroll sideways instead of widening the page */
+  .seg { max-width: 100%; overflow-x: auto; scrollbar-width: none; }
+  .seg::-webkit-scrollbar { display: none; }
+  .search { width: 100%; }
+  .status { font-size: 11px; padding: 6px 10px; }
+  .card { padding: 18px 16px; border-radius: 20px; }
+  .hero { height: 480px; } .age, [class*="dp-a"], [class*="dr-b"] { height: 360px; }
+  .watch, .dep { height: auto; min-height: 340px; }
+  /* Cards whose charts need fixed room on a small screen */
+  .dr-a { height: 720px; }                 /* 13 rows of survey rates */
+  .dp-c { height: 420px; }                 /* scatter of every neighbourhood */
+  .dr-d, .dr-c { height: auto; min-height: 380px; }
+  .me-a, .me-b, .me-c, .me-d { height: auto; }
+  .age-body { grid-template-columns: minmax(0, 1fr); }
+  .age-left { padding-bottom: 0; flex-direction: row; align-items: flex-end; justify-content: space-between; }
+  .age-left .big { font-size: 34px; }
+  .tiles { grid-template-columns: 1fr 1fr; }
+  .tile .v { font-size: 28px; }
+  .cmp, .eff { grid-template-columns: minmax(84px, 1fr) 1.2fr 46px; font-size: 12px; }
+  .callout { min-width: 160px; padding: 10px 12px; }
+  .callout .v { font-size: 22px; }
+  .foot { text-align: left; margin-top: 0; }
+}
+
 /* ---------- Observable Framework page chrome ---------- */
 /* Our layout is full-bleed: drop Framework's centred column and padding. */
 #observablehq-center { margin: 0 !important; padding: 0 !important; }
