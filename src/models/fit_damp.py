@@ -154,8 +154,11 @@ def load_targets(years=TARGET_YEARS) -> tuple[dict, dict]:
         "region": pick("government office region", REGION_MAP),
         "imd_decile": pick("deprived local areas", DECILE_MAP),
     }
-    overall = float(avg.loc[("dwelling age", "all dwellings")]) if ("dwelling age", "all dwellings") in avg else None
-    return fitted, held | {"_overall": overall}
+    # The table's national "all dwellings" row sits under whichever breakdown comes last, so find it by category
+    totals = avg[avg.index.get_level_values("category") == "all dwellings"]
+    if totals.empty:
+        raise ValueError("No 'all dwellings' row found in the published rates")
+    return fitted, held | {"_overall": float(totals.mean())}
 
 
 SOCIAL_SAMPLE_SHARE = 0.17  # approx. share of EHS surveyed dwellings that are social rented

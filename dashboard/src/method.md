@@ -53,7 +53,7 @@ title: Method
     <div class="prose">
       <ul>
         <li><b>Risk indicator, not diagnosis.</b> Buildings only: occupancy, heating habits, leaks and repairs aren't in the EPC.</li>
-        <li><b>Regional gaps</b> beyond buildings (e.g. London's higher rate) aren't captured.</li>
+        <li><b>Regional gaps</b> beyond buildings (e.g. the East of England's lower rate) aren't captured.</li>
         <li><b>Additive effects</b>, no interactions; categories matched approximately.</li>
         <li><b>Coverage.</b> Homes without an EPC are missing; <span id="me-old"></span> of certificates pre-date 2015.</li>
       </ul>

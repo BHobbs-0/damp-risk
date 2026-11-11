@@ -4,7 +4,7 @@
 
 **Key findings:** an estimated **~203,000 social homes in England (7.1%) have damp**. Risk is driven most by **building age** (pre-1919 homes have 1.75× the odds of a typical home; post-1990 homes 0.45×) and **energy rating** (E–G: 2.2×). The highest-risk councils are **Barking and Dagenham (8.9%)**, Forest of Dean and Southampton; **74% of pre-1919 social homes have uninsulated walls**.
 
-[📊 Live dashboard](https://bhobbs-0.github.io/damp-risk/) · [📄 Full write-up](reports/write-up.md) · [🧪 Notebooks](notebooks/)
+[📊 Live dashboard](https://bhobbs-0.github.io/damp-risk/) · [📄 Full write-up](reports/write-up.md) · [🧪 Model notebook](notebooks/02_model.ipynb)
 
 [![Damp Risk Atlas overview: council hex map, risk by construction age, watch list and deprivation](reports/figures/dashboard_overview.png)](https://bhobbs-0.github.io/damp-risk/)
 
@@ -151,15 +151,22 @@ damp-risk/
 
 ## Roadmap
 
-- [ ] **Week 1:** Data acquisition, cleaning, EHS ↔ EPC feature mapping
-  - [x] EPC: 2.86m social homes cleaned, harmonised features, unit-tested parsers
-  - [x] Geography: postcode → LSOA/MSOA (99.98% matched), MSOA & LA boundaries
-  - [ ] EHS: load, confirm damp variables, map to EPC features
-- [ ] **Week 2:** EDA, baseline & LightGBM models, calibration, SHAP
-- [ ] **Week 3:** Score EPC social homes, aggregate, deprivation analysis, validation
-- [ ] **Week 4:** Dashboard (Observable Framework), write-up, tests, polish
-  - [x] Five pages (Overview, Areas, Drivers, Deprivation, Method): one-screen layouts, council hex map, neighbourhood maps, D3 charts, Python data loaders
-  - [ ] Swap building indicators for modelled damp risk once trained; deploy to GitHub Pages
+**Done**
+- [x] **Data:** 2.86m EPC social homes cleaned with unit-tested parsers; postcode → neighbourhood (99.98% matched); boundaries and council hex map
+- [x] **Damp rates:** English Housing Survey published tables (DA5101/DA5102) parsed for 2022–2024
+- [x] **Model:** logistic model calibrated to published rates; validated by leave-one-out and on unseen region and deprivation breakdowns with a noise floor
+- [x] **Scoring:** every home scored and aggregated to neighbourhoods and councils
+- [x] **Dashboard:** five pages on Observable Framework, phone layout, deployed to GitHub Pages
+- [x] **Write-up** with findings and recommendations
+
+**Changed plan**
+- ~~Train LightGBM on EHS microdata, explain with SHAP~~: UK Data Service access was declined, so the model is calibrated to published rates instead, and odds ratios replace SHAP. The evaluation toolkit (`src/models/`) is ready if home-level data ever becomes available.
+
+- [x] **Notebooks:** [`01_data_audit`](notebooks/01_data_audit.ipynb) (EPC and survey tables) and [`02_model`](notebooks/02_model.ipynb) (fit, validation, targeting), executed with outputs and rebuilt by `notebooks/build_notebooks.py --run`
+
+**Still to do**
+- [ ] Uncertainty ranges on estimates (bootstrap over published rates' sampling error)
+- [ ] Add overcrowding (Census 2021) and climate data to explain the regional gap
 
 ## Author
 

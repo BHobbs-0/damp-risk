@@ -3,3 +3,7 @@ target-version = "py311"
 
 [lint]
 select = ["E", "F", "I", "UP", "B"]
+
+[lint.per-file-ignores]
+# The notebook builder embeds notebook prose and cell code as strings; wrapping them would change the notebooks.
+"notebooks/build_notebooks.py" = ["E501"]

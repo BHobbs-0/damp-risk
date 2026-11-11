@@ -17,5 +17,7 @@ matplotlib
 
 # Dev
 ipykernel
+nbformat          # notebooks/build_notebooks.py writes the notebooks...
+nbclient          # ...and runs them so outputs are saved
 pytest
 ruff

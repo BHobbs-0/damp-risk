@@ -70,14 +70,14 @@ With no labelled homes, I tested the model in two honest ways:
 Estimated risk falls steadily with building age: **12.5%** for pre-1919 homes, 9.1% for 1945–64, 5.9% for 1965–80 and **2.7%** after 1990. Net of the other characteristics, a pre-1919 home has **1.75×** the odds of damp of a typical home, and an E–G energy rating **2.2×**. Insulation is one likely mechanism: **74% of pre-1919 social homes have uninsulated walls**, against 22% overall.
 
 ### 4.3 Where risk is highest
-Council averages range from **5.5%** (Milton Keynes, with newer stock) to **8.9%** (Barking and Dagenham). The highest-risk councils mix inner London (Barking and Dagenham, Hammersmith and Fulham, Kensington and Chelsea) with rural, off-gas areas (Forest of Dean, Melton) and port cities (Southampton). Barking and Dagenham's position reflects its stock: **34% of its social homes were built 1919–44**, more than twice the national share, consistent with the large interwar Becontree estate.
+Council averages range from **5.5%** (Milton Keynes, with newer stock) to **8.9%** (Barking and Dagenham). The highest-risk councils mix London boroughs (Barking and Dagenham, Hammersmith and Fulham, Kensington and Chelsea) with rural, off-gas areas (Forest of Dean, Melton) and port cities (Southampton). Barking and Dagenham's position reflects its stock: **34% of its social homes were built 1919–44**, more than twice the national share, consistent with the large interwar Becontree estate.
 
 For planning, **numbers matter as much as rates**. Birmingham's risk is close to average, but its size means about **6,600 expected cases**, more than any other council, followed by Leeds and Manchester (about 3,700 each).
 
 Deprivation shows a gentle gradient: **7.3%** in the most deprived tenth of neighbourhoods against **6.0%** in the least deprived.
 
 ### 4.4 What building data can't explain
-The model doesn't reproduce the survey's **regional** differences. London's published rate is 10.0% against 7.6% predicted, and the East of England's is 3.1% against 6.7%. Those gaps are bigger than sampling noise alone explains, so they likely reflect factors the EPC doesn't record: overcrowding, ventilation, and the way homes are heated and repaired. This is the clearest limit of a buildings-only model.
+The model predicts similar rates in every region (6.5–7.6%), while the survey publishes rates from 3.1% to 10.0%. Much of that spread is sampling noise: each regional rate rests on a few hundred surveyed social homes. London's 10.0% against 7.6% predicted, for example, is within the published figure's approximate 95% range. But the **East of England (3.1% against 6.7% predicted) and the North East (4.1% against 7.3%)** are lower than the model expects even allowing for that noise. Something other than building characteristics keeps damp down there, and the EPC doesn't record it. Candidates include climate (the East of England is the driest region), occupancy and overcrowding, and how homes are heated and maintained. This is the clearest limit of a buildings-only model, and a good lead for further work.
 
 ### 4.5 Targeting: homes beat places
 - The riskiest **10% of homes** (estimated risk 11.4% or more) hold **23% of expected cases**: 2.3× more efficient than inspecting at random.
