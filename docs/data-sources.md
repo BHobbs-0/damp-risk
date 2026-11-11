@@ -2,7 +2,18 @@
 
 Checked 2026-11-09. ✅ = downloaded into `data/raw/`, ⏳ = needs manual download (sign-in required).
 
-## 1. English Housing Survey (EHS): Housing Stock Data ⏳
+## 0. English Housing Survey published damp tables ✅ (what the model is built on)
+- **Why:** the UK Data Service **declined access** to the EHS microdata (2026-11-11), so the model is calibrated to the survey's **published, open** damp rates instead (see `src/models/calibrate.py`).
+- **Files:** GOV.UK statistical data set *Dwelling condition and safety* (live tables, updated 9 Jul 2026 with 2024-25 data):
+  - `DA5101_Damp_and_mould_-_dwellings.ods` (117 KB): damp by dwelling age, type, floor area and occupancy, **split by tenure**
+  - `DA5102_Damp_and_mould_-_areas.ods` (87 KB): damp by area type, deprivation decile and region, split by tenure
+- **Saved to:** `data/raw/ehs_tables/`. Parsed by `python -m src.ingest.ehs_tables` into `data/interim/ehs_tables/damp_rates.parquet`.
+- **Years:** one sheet per year, 2008–2024, but only **2022–2024** have a "social rented" column (older sheets split local authority / housing association, or have no tenure split). The model uses the **average of 2023 and 2024**; 2022 is excluded as partly modelled (COVID).
+- **Suppressed cells:** values shown as "u" (too few cases) become null, e.g. social rented *detached* homes.
+- **Energy rating** isn't in these tables by tenure. Social figures come from the EHS 2023-24 *Drivers and impacts of housing quality* report (band D 9%; A–C 8% LA / 4% HA; E–G 29% LA / 16% HA), with LA and HA combined at ~39% / 61%.
+- **Licence:** Open Government Licence v3.0.
+
+## 1. English Housing Survey (EHS): Housing Stock Data ❌ access declined
 - **Where:** UK Data Service catalogue (search "English Housing Survey Housing Stock Data"). A free account is required.
 - **Which version:** the **End User Licence (EUL)** editions (not "Special Licence Access", which needs a separate application).
 - **Format:** choose **SPSS (.sav)** or **Stata (.dta)**. Both load with `pyreadstat`.

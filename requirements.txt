@@ -3,6 +3,7 @@ pandas
 pyarrow
 duckdb
 pyreadstat        # reads EHS SPSS (.sav) / Stata (.dta) files from UK Data Service
+odfpy             # reads the EHS published live tables (.ods)
 
 # Modelling
 scikit-learn
