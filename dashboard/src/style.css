@@ -155,7 +155,9 @@ h1.long { font-size: 26px; white-space: nowrap; overflow: hidden; text-overflow:
 .tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: auto; }
 .me-a .steps { flex: 1; align-content: space-evenly; }
 .tiles.two { grid-template-columns: 1fr 1fr; margin-top: 14px; }
-.tiles.two .tile .v { font-size: 28px; color: var(--faint); }
+.tiles.two { gap: 8px; margin-top: 10px; }
+.tiles.two .tile { padding: 10px 12px; }
+.tiles.two .tile .v { font-size: 24px; margin: 2px 0; }
 .tile { background: rgba(255,255,255,.7); border: 1px solid rgba(255,255,255,.95); border-radius: 18px; padding: 16px 16px 14px; }
 .tile.hl { background: var(--accent-soft); border-color: #F6D0B3; }
 .tile .l { font-size: 12.5px; color: var(--muted); }
@@ -172,6 +174,17 @@ h1.long { font-size: 26px; white-space: nowrap; overflow: hidden; text-overflow:
 .cmp .mark { position: absolute; top: -4px; width: 2px; height: 18px; background: var(--text); border-radius: 1px; transition: left .4s ease; }
 .cmp .val { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
 .cmp.hl .val { color: var(--accent-text); }
+
+/* Model effects: diverging bars around 1x odds */
+.effects { display: flex; flex-direction: column; justify-content: space-evenly; flex: 1; min-height: 0; margin-top: 6px; }
+.eff { display: grid; grid-template-columns: minmax(120px, 1.3fr) 1.4fr 46px; gap: 10px; align-items: center; font-size: 12.5px; }
+.eff .lab b { font-weight: 600; }
+.eff .track { position: relative; height: 10px; background: rgba(27,29,33,.05); border-radius: 5px; }
+.eff .mid { position: absolute; left: 50%; top: -4px; width: 1.5px; height: 18px; background: var(--text); opacity: .5; }
+.eff .fill { position: absolute; top: 0; bottom: 0; border-radius: 5px; background: var(--cool); }
+.eff.up .fill { background: var(--accent); }
+.eff .val { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--cool-text); }
+.eff.up .val { color: var(--accent-text); }
 
 /* Text cards (Method page) */
 .prose { font-size: 13.5px; line-height: 1.6; color: var(--text); margin-top: 10px; overflow: auto; min-height: 0; }

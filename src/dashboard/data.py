@@ -10,12 +10,16 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 AGG = PROJECT_ROOT / "data" / "processed" / "dashboard"  # output of src.score.aggregate
 
-INDICATORS = ["pct_wall_uninsulated", "pct_epc_efg", "pct_not_full_glazing", "pct_electric_heating"]
+MODEL_DIR = PROJECT_ROOT / "data" / "processed" / "model"  # output of src.models.fit_damp
+
+# `risk` = modelled % of homes estimated to have damp; the rest are EPC building indicators (% of homes)
+INDICATORS = ["risk", "pct_wall_uninsulated", "pct_epc_efg", "pct_not_full_glazing", "pct_electric_heating"]
 AGE_ORDER = ["pre1919", "1919-1944", "1945-1964", "1965-1980", "1981-1990", "post1990"]
 
 
@@ -48,7 +52,17 @@ def overview() -> dict:
         {c: (lsoa[c] * w).groupby(lsoa.imd_decile).sum() / w.groupby(lsoa.imd_decile).sum() for c in INDICATORS}
     ).reset_index()
 
-    keep = ["n_homes", "n_msoas", "n_las", "median_sap", "latest_certificate", "min_homes_shown", *INDICATORS]
+    keep = [
+        "n_homes",
+        "n_msoas",
+        "n_las",
+        "median_sap",
+        "latest_certificate",
+        "min_homes_shown",
+        "expected_cases",
+        "risk_p90",
+        *INDICATORS,
+    ]
     return {
         "england": {k: england[k] for k in keep},
         "councils": _records(la),
@@ -64,7 +78,7 @@ def la_hex() -> dict:
 
 # --------------------------------------------------------------------------- Areas page
 
-AREA_COLS = [*INDICATORS, "pct_pre1919", "median_sap"]
+AREA_COLS = [*INDICATORS, "pct_pre1919", "median_sap", "expected_cases", "pct_top10"]
 MIX_FEATURES = ["age_band", "dwelling_type", "heating", "epc_band"]
 
 
@@ -165,13 +179,64 @@ def drivers() -> dict:
         "england": {k: england[k] for k in ["n_homes", *INDICATORS, "median_sap"]},
         "ehs": ehs,
         "ehs_social_2024": 7,
+        "effects": model_effects(),
     }
+
+
+FEATURE_LABELS = {"age": "Built", "type": "Type", "area": "Floor area", "eer": "Energy rating"}
+CATEGORY_LABELS = {
+    "pre1919": "before 1919",
+    "1919-1944": "1919–44",
+    "1945-1964": "1945–64",
+    "1965-1980": "1965–80",
+    "1981-1990": "1981–90",
+    "post1990": "after 1990",
+    "mid_terrace": "mid-terrace",
+    "end_terrace": "end-terrace",
+    "semi_detached": "semi-detached",
+    "flat": "flat",
+    "bungalow": "bungalow",
+    "A-C": "A–C",
+    "D": "D",
+    "E-G": "E–G",
+    "<50": "under 50m²",
+    "50-69": "50–69m²",
+    "70-89": "70–89m²",
+    "90-109": "90–109m²",
+    "110+": "110m² or more",
+}
+
+
+def model_effects() -> list[dict]:
+    """Each fitted category's effect as an odds ratio vs a home with average characteristics.
+    Categories fixed at 0 (no published rate, e.g. detached) are left out."""
+    model = json.loads((MODEL_DIR / "damp_model.json").read_text(encoding="utf-8"))
+    rows = []
+    for f, coefs in model["coefs"].items():
+        for cat, b in coefs.items():
+            if cat in model["targets"].get(f, {}):
+                rows.append(
+                    {
+                        "feature": FEATURE_LABELS[f],
+                        "category": CATEGORY_LABELS.get(cat, cat),
+                        "odds_ratio": round(float(np.exp(b)), 3),
+                    }
+                )
+    return sorted(rows, key=lambda r: -abs(np.log(r["odds_ratio"])))
 
 
 def method() -> dict:
-    """Headline numbers quoted on the Method page."""
+    """Headline numbers and model validation for the Method page."""
     england = json.loads((AGG / "england_summary.json").read_text(encoding="utf-8"))
-    return {
-        k: england[k]
-        for k in ["n_homes", "n_msoas", "n_las", "pct_cert_before_2015", "latest_certificate", "min_homes_shown"]
-    }
+    keep = [
+        "n_homes",
+        "n_msoas",
+        "n_las",
+        "pct_cert_before_2015",
+        "latest_certificate",
+        "min_homes_shown",
+        "risk",
+        "expected_cases",
+    ]
+    validation = json.loads((MODEL_DIR / "validation.json").read_text(encoding="utf-8"))
+    return {k: england[k] for k in keep} | {"validation": validation}

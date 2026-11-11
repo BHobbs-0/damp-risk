@@ -7,7 +7,21 @@ let D, state;
 
 function render() {
   indicatorSwitch("#seg", state.ind, k => { state.ind = k; render(); });
-  renderEhs(); renderAge(); renderOldNew();
+  renderEhs(); renderAge(); renderOldNew(); renderEffects();
+}
+
+/** Diverging bars on a log scale around 1x: right/orange raises the odds, left/periwinkle lowers them. */
+function renderEffects() {
+  const rows = D.effects.slice(0, 7), lim = Math.log(2.5);
+  const pos = r => 50 + (Math.max(-lim, Math.min(lim, Math.log(r.odds_ratio))) / lim) * 50;
+  d3.select("#effects").selectAll("div.eff").data(rows).join("div").attr("class", "eff")
+    .classed("up", r => r.odds_ratio > 1)
+    .html(r => {
+      const p = pos(r), left = Math.min(50, p), width = Math.abs(p - 50);
+      return `<span class="lab"><b>${r.feature}</b> ${r.category}</span>
+        <span class="track"><span class="mid"></span><span class="fill" style="left:${left}%;width:${width}%"></span></span>
+        <span class="val">×${r.odds_ratio.toFixed(2)}</span>`;
+    });
 }
 
 function renderEhs() {
@@ -61,7 +75,7 @@ function renderOldNew() {
 export function mountDrivers(data, invalidation) {
   mountRail("drivers");
   D = data;
-  state = {ind: "pct_wall_uninsulated"};
+  state = {ind: "risk"};
   d3.select("#ehs-big").text(`${D.ehs_social_2024}%`);
   onResize(document.querySelector(".bento"), render, invalidation);
   render();

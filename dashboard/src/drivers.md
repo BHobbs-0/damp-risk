@@ -11,7 +11,7 @@ title: Drivers
     <h1>What drives damp?</h1>
   </div>
   <div class="seg" role="group" aria-label="Indicator" id="seg"></div>
-  <span class="status" title="Areas are described by EPC building indicators until the damp model is trained"><span class="dot"></span>Building indicators · model coming</span>
+  <span class="status" title="Estimated from building characteristics, calibrated to published English Housing Survey damp rates"><span class="dot"></span>Estimated risk · calibrated to EHS</span>
 </header>
 <section class="bento">
   <article class="card dr-a" aria-labelledby="ehs-title">
@@ -42,16 +42,12 @@ title: Drivers
     </div>
     <div class="cmps" id="oldnew"></div>
   </article>
-  <article class="card dr-d" aria-labelledby="next-title">
+  <article class="card dr-d" aria-labelledby="eff-title">
     <div class="card-head">
-      <div><h2 id="next-title">Coming after modelling</h2><div class="sub">Once the survey data is in</div></div>
-      <span class="pill">Week 2</span>
+      <div><h2 id="eff-title">What the model learned</h2><div class="sub">Odds of damp vs a typical home, each effect net of the others</div></div>
+      <span class="pill">Model</span>
     </div>
-    <div class="steps">
-      <div class="step"><span class="num">1</span><div><b>Feature importance</b><br><span class="big-cap">Which characteristics matter most once the others are accounted for (SHAP).</span></div></div>
-      <div class="step"><span class="num">2</span><div><b>Effect of each feature</b><br><span class="big-cap">How estimated risk changes across age, walls, rating and heating.</span></div></div>
-      <div class="step"><span class="num">3</span><div><b>What-if calculator</b><br><span class="big-cap">Describe a home and see its estimated risk, and why.</span></div></div>
-    </div>
+    <div class="effects" id="effects"></div>
   </article>
 </section>
 <div class="foot">Source for survey rates: English Housing Survey 2023 to 2024, Drivers and impacts of housing quality; 2024 to 2025 headline report · Building indicators: EPC register, social rented homes</div>

@@ -109,7 +109,7 @@ function renderScatter() {
 export function mountDeprivation(data, invalidation) {
   mountRail("deprivation");
   D = data; M = rowsFromColumns(data.msoas);
-  state = {ind: "pct_wall_uninsulated"};
+  state = {ind: "risk"};
   onResize(document.querySelector(".bento"), render, invalidation);
   render();
 }

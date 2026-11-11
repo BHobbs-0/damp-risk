@@ -17,7 +17,7 @@ title: Areas
     <input id="search" list="councils" placeholder="Choose a council…" autocomplete="off">
     <datalist id="councils"></datalist>
   </label>
-  <span class="status" title="Areas are described by EPC building indicators until the damp model is trained"><span class="dot"></span>Building indicators · model coming</span>
+  <span class="status" title="Estimated from building characteristics, calibrated to published English Housing Survey damp rates"><span class="dot"></span>Estimated risk · calibrated to EHS</span>
 </header>
 <section class="bento">
   <article class="card hero" aria-labelledby="map-title">

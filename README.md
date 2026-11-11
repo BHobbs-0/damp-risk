@@ -1,10 +1,10 @@
 # Damp Risk Atlas: Predicting damp & mould risk in England's social housing
 
-> **Status:** 🚧 In progress (Week 1 of 4). Findings below are placeholders until the analysis is complete.
+> **Status:** model built and live on the dashboard. Estimates come from building characteristics only (see limitations).
 
-**Key finding (placeholder):** _e.g. "Pre-1919 solid-wall flats with an EPC band of E or worse are X times more likely to have damp; the 10% highest-risk areas contain Y% of predicted cases."_
+**Key findings:** an estimated **~203,000 social homes in England (7.1%) have damp**. Risk is driven most by **building age** (pre-1919 homes have 1.75× the odds of a typical home; post-1990 homes 0.45×) and **energy rating** (E–G: 2.2×). The highest-risk councils are **Barking and Dagenham (8.9%)**, Forest of Dean and Southampton; **74% of pre-1919 social homes have uninsulated walls**.
 
-[📊 Live dashboard](https://bhobbs-0.github.io/damp-risk/) · [📄 Full write-up](reports/) · [🧪 Modelling notebook](notebooks/)
+[📊 Live dashboard](https://bhobbs-0.github.io/damp-risk/) · [📄 Full write-up](reports/) · [🧪 Notebooks](notebooks/)
 
 ---
 
@@ -20,55 +20,52 @@ The aim is to support **proactive** inspection, so landlords can focus surveys a
 
 ## Approach
 
+Home-level survey microdata wasn't available (the UK Data Service declined access), so the model is **calibrated to the English Housing Survey's published, open damp rates**:
+
 ```
- English Housing Survey (EHS)         EPC Register
- ~thousands of surveyed homes          millions of homes
- ✅ damp recorded by surveyors         ❌ no damp data
- ❌ region-level location only         ✅ postcode / LSOA location
-            │                                   │
-            └──── harmonise shared features ────┘
-                 (age, built form, walls,
-                  heating, SAP score, floor area…)
-            │                                   │
-      train + calibrate model  ───────────▶  score social rented homes
-                                                │
-                                   aggregate to LSOA / local authority
-                                                │
-                                 + Indices of Deprivation 2025
-                                                │
-                                   maps · drivers · dashboard
+ EHS published damp rates (DA5101/DA5102)      EPC register
+ social homes, by age / type / floor area        2.86m social homes, each with
+ (+ energy rating from the EHS report)           age, type, floor area, rating
+            │                                               │
+            └──── logistic model calibrated so that, applied to the real
+                  mix of EPC homes, it reproduces every published rate ────┐
+                                                                            │
+                     score every home → aggregate to neighbourhoods / councils
+                                                                            │
+          validate on breakdowns the model never saw (region, deprivation)  │
+                                                   → dashboard ◀────────────┘
 ```
 
-1. **Harmonise** features that exist in both the EHS and the EPC register.
-2. **Train** a classifier on EHS surveyed homes (target: damp or mould present). Logistic regression is the baseline, LightGBM the main model, and survey weights are used in evaluation.
-3. **Calibrate** probabilities so that area-level averages are meaningful.
-4. **Explain** risk drivers with SHAP.
-5. **Score** every social rented home in the EPC register (latest certificate per property), then **aggregate** to areas.
-6. **Analyse** the results against deprivation, and **validate** them against weighted EHS regional prevalence.
+1. **Prepare** 2.86m EPC records: latest certificate per home, social rented, England; parse free-text fields into survey-style categories.
+2. **Collect** published damp rates for social homes (average of 2023 and 2024).
+3. **Calibrate** an additive logistic model so its predicted category rates match every published rate *simultaneously* on the real joint mix of homes. Because the EPC data shows how characteristics occur together, overlapping effects (old homes are often poorly rated) aren't double-counted, unlike multiplying risk ratios.
+4. **Score** every home and **aggregate** to MSOA neighbourhoods and councils (area level only).
+5. **Validate** by predicting breakdowns the model never saw, against a sampling-noise floor, and by leaving each fitted breakdown out.
 
 ## Data sources
 
-| Dataset | Publisher | Use | Licence / access |
+| Dataset | Publisher | Use | Licence |
 |---|---|---|---|
-| English Housing Survey – Housing Stock Data (EUL) | MHCLG via UK Data Service | Training labels & features | End User Licence (free registration). **Not redistributed.** |
-| Domestic Energy Performance Certificates | MHCLG / DESNZ | Homes to score | Open data (see publisher terms) |
-| English Indices of Deprivation 2025 | MHCLG | Area context | Open Government Licence |
-| LSOA 2021 boundaries | ONS Open Geography Portal | Mapping | Open Government Licence |
-| Postcode → OA/LSOA/MSOA lookup (May 2026) | ONS Open Geography Portal | Linking EPC homes to areas | Open Government Licence |
+| English Housing Survey live tables DA5101, DA5102 (damp and mould) | MHCLG | Published damp rates: calibration and validation | Open Government Licence |
+| Domestic Energy Performance Certificates | MHCLG | Homes to score | Open data |
+| English Indices of Deprivation 2025 | MHCLG | Deprivation context and validation | Open Government Licence |
+| LSOA 2021 boundaries; postcode lookup (May 2026) | ONS Open Geography Portal | Linking homes to areas; maps | Open Government Licence |
 
-Raw data is **not included** in this repository. See [Getting the data](#getting-the-data).
+Raw data is **not included** in this repository. See [Getting the data](#getting-the-data) and [docs/data-sources.md](docs/data-sources.md).
 
 ## Results
 
-_To be completed._
-
-| Model | PR-AUC | ROC-AUC | Brier score |
+| Check | Model error (pts) | Baseline (pts) | Notes |
 |---|---|---|---|
-| Baseline (prevalence) | – | 0.50 | – |
-| Logistic regression | – | – | – |
-| LightGBM (calibrated) | – | – | – |
+| Fit to the 19 published rates | **0.2** | 1.7 | correlation 0.998 |
+| Leave out building age | **1.8** | 2.6 | predicted from the other breakdowns |
+| Leave out dwelling type | **0.45** | 1.08 | |
+| Leave out floor area | **0.87** | 1.04 | |
+| Leave out energy rating | **1.4** | 2.1 | |
+| Deprivation decile (never seen) | 1.01 | 0.98 | at the sampling-noise floor (1.03) |
+| Region (never seen) | 1.6 | 1.6 | above the noise floor (~1.0): regional differences beyond buildings |
 
-<!-- Add: SHAP summary plot, calibration curve, headline map -->
+Baseline = predicting the national rate for every category. Errors are averages in percentage points, weighted by homes.
 
 ## Getting started
 
@@ -98,11 +95,11 @@ python -m src.ingest.epc         # EPC zip -> data/interim/epc/*.parquet (~4 min
 python -m src.ingest.postcodes   # postcode lookup -> data/interim/postcode_lookup.parquet
 python -m src.features.epc       # social homes + harmonised features -> data/processed/epc_social.parquet (~6 min)
 python -m src.geo.boundaries     # LSOA -> MSOA / LA boundaries -> data/processed/geo/
-python -m src.ingest.ehs dictionary      # EHS: list every variable + label -> data/interim/ehs/variable_dictionary.csv
-python -m src.ingest.ehs search damp     # find variables by name / label / value label (regex)
-python -m src.ingest.ehs convert         # EHS SPSS/Stata -> Parquet + value labels JSON
-python -m src.score.aggregate           # area summaries, map shapes, council hex map -> data/processed/dashboard/
-# (to be added) src.models -> src.score
+python -m src.ingest.ehs_tables  # EHS published damp tables (DA5101/DA5102) -> data/interim/ehs_tables/
+python -m src.models.fit_damp    # calibrate the model, validate -> data/processed/model/
+python -m src.score.score        # estimated risk for every home -> data/processed/epc_scored.parquet
+python -m src.score.aggregate    # area summaries, map shapes, council hex map -> data/processed/dashboard/
+# Optional, only with UK Data Service access: python -m src.ingest.ehs dictionary|search|convert
 ```
 
 ### Run the dashboard (Observable Framework)

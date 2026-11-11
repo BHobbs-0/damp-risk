@@ -2,6 +2,8 @@
 import * as d3 from "npm:d3@7.9.2";
 
 export const IND = {
+  risk: { short: "Damp risk", noun: "estimated damp risk", phrase: "are estimated to have damp",
+          why: "Model estimate from building characteristics, calibrated to published survey damp rates" },
   pct_wall_uninsulated: { short: "Uninsulated walls", noun: "uninsulated walls", phrase: "have uninsulated walls",
                           why: "Damp is 2–3× as common with uninsulated walls" },
   pct_epc_efg: { short: "Rated E–G", noun: "rated EPC E–G", phrase: "are rated EPC E–G",

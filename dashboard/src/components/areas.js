@@ -33,7 +33,7 @@ function render() {
   const msoas = byLad.get(state.lad) ?? [];
   indicatorSwitch("#seg", k, key => { state.ind = key; state.sel = null; render(); });
   d3.select("#council-name").text(c.lad24nm).classed("long", c.lad24nm.length > 18);
-  d3.select("#council-meta").text(`${c.region_name} · ${fInt(c.n_homes)} social homes · ${msoas.length} neighbourhoods`);
+  d3.select("#council-meta").text(`${c.region_name} · ${fInt(c.n_homes)} social homes · ~${fInt(Math.round(c.expected_cases))} estimated to have damp`);
   renderMap(msoas); renderStrip(c); renderTiles(c); renderCompare(c); renderMix();
 }
 
@@ -118,15 +118,15 @@ function renderMap(msoas) {
 function renderTiles(c) {
   const e = D.england;
   const tiles = [
+    ["Estimated damp risk", c.risk, e.risk, "%"],
+    ["In England's riskiest 10%", c.pct_top10, 10, "%"],
     ["Uninsulated walls", c.pct_wall_uninsulated, e.pct_wall_uninsulated, "%"],
     ["Rated EPC E–G", c.pct_epc_efg, e.pct_epc_efg, "%"],
-    ["Built before 1919", c.pct_pre1919, e.pct_pre1919, "%"],
-    ["Median SAP score", c.median_sap, e.median_sap, ""],
   ];
   d3.select("#tiles").selectAll("div.tile").data(tiles).join("div").attr("class", "tile")
-    .classed("hl", ([, v, ev, u], i) => i < 3 && v > ev)
-    .html(([label, v, ev, u], i) => {
-      const better = i === 3 ? v >= ev : v <= ev;
+    .classed("hl", ([, v, ev]) => v > ev)
+    .html(([label, v, ev, u]) => {
+      const better = v <= ev;
       const fmt = u ? d3.format("+.1f") : d3.format("+.0f");
       const diff = Math.abs(v - ev) < (u ? 0.05 : 0.5) ? "Same" : `${fmt(v - ev)}${u ? " pts" : ""}`;
       return `<div class="l">${label}</div><div class="v">${u ? f1(v) + "%" : Math.round(v)}</div>
@@ -171,7 +171,7 @@ export function mountAreas(areas, shapes, invalidation) {
   const q = new URLSearchParams(location.search).get("council")?.toLowerCase();
   const start = D.councils.find(c => c.lad24cd.toLowerCase() === q || c.lad24nm.toLowerCase() === q)
     ?? D.councils.find(c => c.lad24nm === "Manchester");
-  state = {ind: "pct_wall_uninsulated", lad: start.lad24cd, sel: null, hover: null, mix: "age_band"};
+  state = {ind: "risk", lad: start.lad24cd, sel: null, hover: null, mix: "age_band"};
 
   d3.select("#councils").selectAll("option").data(D.councils.map(c => c.lad24nm).sort()).join("option").attr("value", d => d);
   d3.select("#search").on("change", function () {

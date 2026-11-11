@@ -164,7 +164,7 @@ function renderDep() {
 export function mountOverview(data, hex, invalidation) {
   mountRail("overview");
   D = data; HEX = hex;
-  state = { ind: "pct_wall_uninsulated", sel: null, hover: null };
+  state = { ind: "risk", sel: null, hover: null };
   byCode = new Map(D.councils.map(c => [c.lad24cd, c]));
   d3.select("#councils").selectAll("option").data(D.councils.map(c => c.lad24nm).sort()).join("option").attr("value", d => d);
   d3.select("#search").on("change", function () {

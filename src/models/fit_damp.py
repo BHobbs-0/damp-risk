@@ -98,6 +98,20 @@ EER_TARGETS = {
 }
 
 
+# Model features from EPC fields, in the categories the published rates use.
+# Shared by fitting (grouped into cells) and scoring (per home), so they can't drift apart.
+FEATURE_SQL = """
+    coalesce(age_band, 'unknown') as age,
+    case when dwelling_type in ('end_terrace','mid_terrace','semi_detached','bungalow','flat','detached')
+         then dwelling_type else 'other' end as type,
+    case when floor_area_m2 < 50 then '<50' when floor_area_m2 < 70 then '50-69'
+         when floor_area_m2 < 90 then '70-89' when floor_area_m2 < 110 then '90-109'
+         when floor_area_m2 >= 110 then '110+' else 'unknown' end as area,
+    case when epc_band in ('A','B','C') then 'A-C' when epc_band = 'D' then 'D'
+         when epc_band in ('E','F','G') then 'E-G' else 'unknown' end as eer
+"""
+
+
 def load_cells() -> pd.DataFrame:
     con = duckdb.connect()
     return (
@@ -107,15 +121,7 @@ def load_cells() -> pd.DataFrame:
                    "Index of Multiple Deprivation (IMD) Decile (where 1 is most deprived 10% of LSOAs)" as imd_decile
             from read_csv('{IMD_CSV.as_posix()}', all_varchar = true)
         )
-        select
-            age_band as age,
-            case when dwelling_type in ('end_terrace','mid_terrace','semi_detached','bungalow','flat','detached')
-                 then dwelling_type else 'other' end as type,
-            case when floor_area_m2 < 50 then '<50' when floor_area_m2 < 70 then '50-69'
-                 when floor_area_m2 < 90 then '70-89' when floor_area_m2 < 110 then '90-109'
-                 when floor_area_m2 >= 110 then '110+' end as area,
-            case when epc_band in ('A','B','C') then 'A-C' when epc_band = 'D' then 'D'
-                 when epc_band in ('E','F','G') then 'E-G' end as eer,
+        select {FEATURE_SQL},
             region_code as region,
             imd.imd_decile,
             count(*) as n

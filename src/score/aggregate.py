@@ -27,7 +27,9 @@ from src.geo.hexmap import build as build_hex_map
 from src.geo.orient import clockwise
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-SOCIAL = PROJECT_ROOT / "data" / "processed" / "epc_social.parquet"
+# Scored homes (epc_social + estimated `risk`), written by `python -m src.score.score`
+SOCIAL = PROJECT_ROOT / "data" / "processed" / "epc_scored.parquet"
+RISK_COLS = ["risk", "expected_cases", "pct_top10"]
 GEO = PROJECT_ROOT / "data" / "processed" / "geo"
 IMD_CSV = PROJECT_ROOT / "data" / "raw" / "imd" / "File_7_IoD2025_All_Ranks_Scores_Deciles_Population_Denominators.csv"
 OUT_DIR = PROJECT_ROOT / "data" / "processed" / "dashboard"
@@ -51,13 +53,23 @@ SIMPLIFY_M = {"lad": 150, "msoa": 50}
 COORD_DECIMALS = 4  # ~10 m at UK latitudes: plenty for screen maps, halves file size
 
 
-def _indicator_sql() -> str:
+def _indicator_sql(p90: float) -> str:
+    """Building indicators (% of homes) plus modelled risk:
+    risk            mean estimated damp probability, as %
+    expected_cases  sum of probabilities = number of homes expected to have damp
+    pct_top10       % of the area's homes among England's riskiest 10% (risk >= national 90th percentile)
+    """
     parts = [f"round(100.0 * avg(({expr})::int), 1) as {name}" for name, expr in INDICATORS.items()]
+    parts += [
+        "round(100.0 * avg(risk), 2) as risk",
+        "round(sum(risk), 1) as expected_cases",
+        f"round(100.0 * avg((risk >= {p90})::int), 1) as pct_top10",
+    ]
     return ",\n".join(parts + ["round(median(least(sap_score, 100)), 0) as median_sap"])
 
 
 def _suppress(con: duckdb.DuckDBPyConnection, table: str) -> None:
-    cols = list(INDICATORS) + ["median_sap"]
+    cols = list(INDICATORS) + RISK_COLS + ["median_sap"]
     con.sql(f"update {table} set " + ", ".join(f"{c} = null" for c in cols) + f" where n_homes < {MIN_HOMES}")
 
 
@@ -75,7 +87,10 @@ def build_summaries(con: duckdb.DuckDBPyConnection) -> dict:
     lsoa_geo = gpd.read_file(GEO / "lsoa_england.gpkg", columns=["lsoa21cd", "msoa21cd", "msoa21nm", "lad24cd"])
     con.register("hierarchy", lsoa_geo.drop(columns="geometry"))
 
-    ind = _indicator_sql()
+    if not SOCIAL.exists():
+        raise SystemExit(f"{SOCIAL} not found: run `python -m src.score.score` first.")
+    p90 = float(con.sql("select quantile_cont(risk, 0.9) from social").fetchall()[0][0])
+    ind = _indicator_sql(p90)
     con.sql(f"""
         create or replace table la_summary as
         select lad24cd, any_value(lad24nm) as lad24nm, mode(region_name) as region_name,
@@ -139,7 +154,8 @@ def build_summaries(con: duckdb.DuckDBPyConnection) -> dict:
         {
             "n_msoas": int(con.sql("select count(*) from msoa_summary").fetchall()[0][0]),
             "n_las": int(con.sql("select count(*) from la_summary").fetchall()[0][0]),
-            "latest_certificate": str(con.sql("select max(lodgement_date) from social").fetchall()[0][0]),
+            "risk_p90": round(100 * p90, 2),
+            "latest_certificate": str(con.sql("select max(lodgement_date)::date from social").fetchall()[0][0]),
             "min_homes_shown": MIN_HOMES,
         }
     )
